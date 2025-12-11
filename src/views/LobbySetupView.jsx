@@ -1,17 +1,21 @@
 // src/views/LobbySetupView.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // 引入路由 Hook
 import { Heart } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, USE_MOCK } from '../config';
+import { MOCK_CHARACTERS } from '../mock/mockService'; // 引入假資料
 
+// Components
 import StepHeader from '../components/setups/StepHeader';
 import CharacterForm from '../components/setups/CharacterForm';
 import MatchmakingPanel from '../components/setups/MatchmakingPanel';
 import RoomMembersPanel from '../components/setups/RoomMembersPanel';
 
-const LobbySetupView = ({ onStartGame }) => {
-  const [step, setStep] = useState(1); // 1: create characters, 2: matchmaking
+const LobbySetupView = () => {
+  const navigate = useNavigate();
 
+  const [step, setStep] = useState(1); // 1: create characters, 2: matchmaking
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -27,6 +31,18 @@ const LobbySetupView = ({ onStartGame }) => {
 
   // 取得角色列表
   const fetchCharacters = useCallback(async () => {
+    // --- Mock 模式攔截 ---
+    if (USE_MOCK) {
+      setCharacters(MOCK_CHARACTERS);
+      const names = new Set(MOCK_CHARACTERS.map((c) => c.name));
+      setPairForm((prev) => ({
+        a: names.has(prev.a) ? prev.a : '',
+        b: names.has(prev.b) ? prev.b : '',
+      }));
+      return; 
+    }
+    // -------------------
+
     try {
       const res = await axios.get(`${API_BASE_URL}/api/characters/`);
       const chars = res.data;
@@ -51,6 +67,13 @@ const LobbySetupView = ({ onStartGame }) => {
     e.preventDefault();
     if (!formData.name || !formData.personality) return;
 
+    // --- Mock 模式攔截 ---
+    if (USE_MOCK) {
+      alert('Mock Mode: Cannot add new characters to static mock data.');
+      return;
+    }
+    // -------------------
+
     try {
       await axios.post(`${API_BASE_URL}/api/characters/`, formData);
       setFormData({ ...formData, name: '', personality: '' });
@@ -62,6 +85,14 @@ const LobbySetupView = ({ onStartGame }) => {
 
   const handleResetRoom = async () => {
     if (!confirm('Are you sure you want to clear all characters?')) return;
+
+    // --- Mock 模式攔截 ---
+    if (USE_MOCK) {
+      alert('Mock Mode: Reset not supported.');
+      return;
+    }
+    // -------------------
+
     try {
       await axios.post(`${API_BASE_URL}/api/reset/`);
       setPairs([]);
@@ -90,9 +121,7 @@ const LobbySetupView = ({ onStartGame }) => {
       return;
     }
     const exists = pairs.some(
-      (p) =>
-        (p.a === a && p.b === b) ||
-        (p.a === b && p.b === a)
+      (p) => (p.a === a && p.b === b) || (p.a === b && p.b === a)
     );
     if (exists) {
       alert('This pair already exists.');
@@ -109,6 +138,11 @@ const LobbySetupView = ({ onStartGame }) => {
   // 將配對同步到後端
   const syncPairsToBackend = async () => {
     if (pairs.length === 0) return;
+
+    // --- Mock 模式攔截 ---
+    if (USE_MOCK) return; 
+    // -------------------
+
     try {
       await axios.post(`${API_BASE_URL}/api/pairs/`, {
         pairs: pairs.map((p) => ({ a: p.a, b: p.b })),
@@ -123,36 +157,43 @@ const LobbySetupView = ({ onStartGame }) => {
   // Step1 → Step2
   const handleNextStep = () => {
     if (characters.length < 2) {
-      alert('創建至少兩名角色');
+      alert('Please create at least two characters');
       return;
     }
     setStep(2);
   };
 
-  const handlePrevStep = () => {
-    setStep(1);
-  };
-
   // 拖拉時，從右邊丟進左邊 slot
   const handleSlotDrop = (slotKey, charName) => {
-    // slotKey: 'a' or 'b'
-    setPairForm((prev) => ({
-      ...prev,
-      [slotKey]: charName,
-    }));
+    setPairForm((prev) => ({ ...prev, [slotKey]: charName }));
   };
 
-  // 開始模擬（Step 2 按）
+  // 開始模擬
   const handleStart = async () => {
     if (characters.length < 2) {
-      alert('一個人要談什麼感情，請至少創建兩名角色');
+      alert('Please create at least two characters');
       return;
     }
+
+    // --- Mock 模式攔截 (關鍵修改) ---
+    if (USE_MOCK) {
+      setLoading(true);
+      console.log('Mock Mode: Starting Game...');
+      // 假裝載入 0.5 秒後跳轉
+      setTimeout(() => {
+        navigate('/game');
+      }, 500);
+      return;
+    }
+    // -----------------------------
+
     try {
       setLoading(true);
       await syncPairsToBackend();
       await axios.post(`${API_BASE_URL}/api/start/`);
-      onStartGame();
+      
+      // 跳轉到遊戲頁面
+      navigate('/game');
     } catch (err) {
       alert('Failed to start simulation');
       setLoading(false);
@@ -167,7 +208,7 @@ const LobbySetupView = ({ onStartGame }) => {
       >
         <p className="title flex items-center gap-2">
           <Heart size={14} className="text-pink-400" />
-          <span>SimulationShip Lobby</span>
+          <span>SimulationShip Lobby {USE_MOCK && '(MOCK MODE)'}</span>
         </p>
 
         <StepHeader step={step} />
@@ -187,7 +228,7 @@ const LobbySetupView = ({ onStartGame }) => {
               <RoomMembersPanel
                 characters={characters}
                 onRefresh={fetchCharacters}
-                enableDrag={false}   // Step1 不用拖拉
+                enableDrag={false}
               />
 
               <div className="mt-3 flex justify-end">
@@ -214,17 +255,17 @@ const LobbySetupView = ({ onStartGame }) => {
               setPairForm={setPairForm}
               onAddPair={handleAddPair}
               onRemovePair={handleRemovePair}
-              onBack={handlePrevStep}
+              onBack={() => setStep(1)}
               onStart={handleStart}
               loading={loading}
-              onSlotDrop={handleSlotDrop} // ⭐ 讓左側可以接收拖拉
+              onSlotDrop={handleSlotDrop}
             />
 
             <div className="flex-1 flex flex-col">
               <RoomMembersPanel
                 characters={characters}
                 onRefresh={fetchCharacters}
-                enableDrag={true}    // ⭐ Step2 啟用拖拉
+                enableDrag={true}
               />
             </div>
           </div>
@@ -232,15 +273,9 @@ const LobbySetupView = ({ onStartGame }) => {
       </div>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #1f1024;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #f9a8d4;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f1024; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #f9a8d4; }
       `}</style>
     </div>
   );
