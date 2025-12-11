@@ -10,20 +10,18 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
       className="nes-container is-dark with-title flex flex-col h-full"
       style={{ backgroundColor: '#3a253f', borderColor: '#f9a8d4' }}
     >
-      <p className="title flex items-center justify-between">
-        <span>Room Members ({characters.length})</span>
-        {onRefresh && (
-          <button
-            onClick={onRefresh}
-            type="button"
-            className="nes-btn is-small"
-            style={{ backgroundColor: '#fb7185', color: 'black' }}
-          >
-            <RefreshCw size={12} className="mr-1" />
-            Refresh
-          </button>
-        )}
-      </p>
+      <p className="title">Room Members ({characters.length})</p>
+
+      {onRefresh && (
+        <button
+          onClick={onRefresh}
+          type="button"
+          className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/50 px-2 py-1 rounded-sm transition-colors text-[10px]"
+        >
+          <RefreshCw size={10} />
+          Refresh
+        </button>
+      )}
 
       <div className="flex-1 overflow-y-auto mt-3 pr-1 grid grid-cols-2 xl:grid-cols-3 gap-4 custom-scrollbar">
         {characters.map((char) => {

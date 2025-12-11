@@ -187,14 +187,14 @@ const LobbySetupView = ({ onStartGame }) => {
               <RoomMembersPanel
                 characters={characters}
                 onRefresh={fetchCharacters}
-                enableDrag={false}   // Step1 不用拖拉
+                enableDrag={false}
               />
 
               <div className="mt-3 flex justify-end">
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="nes-btn is-primary"
+                  className="nes-btn w-64"
                   style={{ backgroundColor: '#f9a8d4', color: 'black', fontSize: '12px' }}
                 >
                   Next: Matchmaking
@@ -217,14 +217,14 @@ const LobbySetupView = ({ onStartGame }) => {
               onBack={handlePrevStep}
               onStart={handleStart}
               loading={loading}
-              onSlotDrop={handleSlotDrop} // ⭐ 讓左側可以接收拖拉
+              onSlotDrop={handleSlotDrop}
             />
 
             <div className="flex-1 flex flex-col">
               <RoomMembersPanel
                 characters={characters}
                 onRefresh={fetchCharacters}
-                enableDrag={true}    // ⭐ Step2 啟用拖拉
+                enableDrag={true}
               />
             </div>
           </div>
