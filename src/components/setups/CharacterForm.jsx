@@ -53,49 +53,41 @@ const CharacterForm = ({ formData, setFormData, onSubmit, onResetRoom }) => {
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-end"> 
+            {/* Gender 區塊 */}
             <div className="nes-field flex-1">
-              <label className="text-[10px] text-pink-100">Gender</label>
-              <div className="inline-flex gap-4 mt-1 text-[13px]">
-                <label>
-                  <input
-                    type="radio"
-                    className="nes-radio"
-                    name="gender"
-                    value="male"
-                    checked={formData.gender === 'male'}
-                    onChange={(e) =>
-                      setFormData({ ...formData, gender: e.target.value })
-                    }
-                  />
-                  <span className="ml-1">Male</span>
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    className="nes-radio"
-                    name="gender"
-                    value="female"
-                    checked={formData.gender === 'female'}
-                    onChange={(e) =>
-                      setFormData({ ...formData, gender: e.target.value })
-                    }
-                  />
-                  <span className="ml-1">Female</span>
-                </label>
+              <label className="text-[10px] text-pink-100 mb-1 block">Gender</label>
+              <div className="flex gap-2">
+                {['male', 'female'].map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, gender: g })}
+                    className={`flex-1 h-8 text-[10px] border-2 transition-all flex items-center justify-center ${
+                      formData.gender === g
+                        ? 'bg-pink-500 text-black border-pink-200 font-bold' 
+                        : 'bg-slate-800 text-pink-400 border-pink-900 hover:border-pink-500' 
+                    }`}
+                  >
+                    {g === 'male' ? '♂ Male' : '♀ Female'}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="nes-field w-24">
-              <label className="text-[10px] text-pink-100">Avatar Color</label>
-              <input
-                type="color"
-                value={formData.avatar_color}
-                onChange={(e) =>
-                  setFormData({ ...formData, avatar_color: e.target.value })
-                }
-                className="w-full h-9 border border-pink-300 rounded bg-black cursor-pointer"
-              />
+            {/* Avatar Color 區塊 */}
+            <div className="nes-field w-auto min-w-[80px]">
+              <label className="text-[10px] text-pink-100 whitespace-nowrap mb-1 block">Avatar Color</label>
+              <div className="relative">
+                <input
+                  type="color"
+                  value={formData.avatar_color}
+                  onChange={(e) =>
+                    setFormData({ ...formData, avatar_color: e.target.value })
+                  }
+                  className="w-full h-8 border border-pink-300 rounded bg-black cursor-pointer p-0"
+                />
+              </div>
             </div>
           </div>
 
@@ -126,11 +118,11 @@ const CharacterForm = ({ formData, setFormData, onSubmit, onResetRoom }) => {
           <button
             type="button"
             onClick={onResetRoom}
-            className="nes-btn is-error is-small"
+            className="px-3 py-2 text-pink-700 font-bold border-2 border-pink-900/30 hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all rounded-sm flex items-center justify-center"
           >
           {/* 重置角色*/}
-          <Trash2 size={12} className="mr-1" />
-            Reset Room
+          <Trash2 size={14} className="mr-1" />
+            <span className="text-xs">Reset</span>
           </button>
         </div>
       </form>

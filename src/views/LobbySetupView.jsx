@@ -235,7 +235,7 @@ const LobbySetupView = () => {
                 <button
                   type="button"
                   onClick={handleNextStep}
-                  className="nes-btn is-primary"
+                  className="nes-btn w-64"
                   style={{ backgroundColor: '#f9a8d4', color: 'black', fontSize: '12px' }}
                 >
                   Next: Matchmaking
