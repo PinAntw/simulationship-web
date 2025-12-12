@@ -1,6 +1,7 @@
-// src/components/setup/StepHeader.jsx
+// src/components/setups/StepHeader.jsx
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { UI_TEXT } from '../../constants/i18nMap'; // [新增]
 
 const StepHeader = ({ step }) => {
   return (
@@ -14,7 +15,7 @@ const StepHeader = ({ step }) => {
                 : 'bg-[#3a253f] border-pink-300/50 text-pink-100/70'
             }`}
           >
-            1. Create Characters
+            {UI_TEXT.STEP_1} {/* [修改] */}
           </span>
           <ArrowRight size={10} className="opacity-80" />
           <span
@@ -24,15 +25,15 @@ const StepHeader = ({ step }) => {
                 : 'bg-[#3a253f] border-pink-300/50 text-pink-100/70'
             }`}
           >
-            2. Matchmaking
+            {UI_TEXT.STEP_2} {/* [修改] */}
           </span>
         </div>
       </div>
 
       <div className="flex items-center gap-2 text-[10px] text-pink-200">
         <span className="nes-badge is-splited">
-          <span className="is-dark">Day 1</span>
-          <span className="is-warning">Lobby</span>
+          <span className="is-dark">{UI_TEXT.DAY_PREFIX} 1 {UI_TEXT.DAY_SUFFIX}</span> {/* [修改] */}
+          <span className="is-warning">{UI_TEXT.BADGE_LOBBY}</span> {/* [修改] */}
         </span>
       </div>
     </div>

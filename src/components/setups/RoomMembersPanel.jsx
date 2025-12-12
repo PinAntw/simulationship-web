@@ -3,6 +3,7 @@ import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import charMale from '../../assets/char_male.png';
 import charFemale from '../../assets/char_female.png';
+import { UI_TEXT } from '../../constants/i18nMap'; // [新增]
 
 const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
   return (
@@ -10,7 +11,7 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
       className="nes-container is-dark with-title flex flex-col h-full"
       style={{ backgroundColor: '#3a253f', borderColor: '#f9a8d4' }}
     >
-      <p className="title">Room Members ({characters.length})</p>
+      <p className="title">{UI_TEXT.MEMBERS_TITLE} ({characters.length})</p> {/* [修改] */}
 
       {onRefresh && (
         <button
@@ -19,7 +20,7 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
           className="absolute top-2 right-2 z-10 flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-pink-400 border border-pink-500/50 px-2 py-1 rounded-sm transition-colors text-[10px]"
         >
           <RefreshCw size={10} />
-          Refresh
+          {UI_TEXT.BTN_REFRESH} {/* [修改] */}
         </button>
       )}
 
@@ -41,17 +42,17 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
               <p className="title text-[10px] flex items-center justify-between">
                 <span>
                   {char.name}{' '}
-                  <span className="text-[9px] ml-1 opacity-80">({char.gender})</span>
+                  <span className="text-[9px] ml-1 opacity-80">
+                    ({char.gender === 'male' ? 'M' : 'F'})
+                  </span>
                 </span>
               </p>
 
-              {/* 選顏色 */}
               <div
                 className="absolute top-0 right-2 mt-2 w-3 h-3 rounded-sm"
                 style={{ backgroundColor: char.avatar_color }}
               />
 
-              {/* 頭像 + 個性填寫 */}
               <div className="flex items-start gap-2 mt-2">
                 <div className="w-10 h-10 flex-shrink-0 rounded overflow-hidden border border-pink-300/60 bg-black">
                   <img
@@ -61,7 +62,7 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
                   />
                 </div>
                 <p className="text-[10px] text-pink-100 leading-snug line-clamp-4 min-h-[52px]">
-                  {char.personality || '(No personality set yet)'}
+                  {char.personality || UI_TEXT.NO_PERSONALITY} {/* [修改] */}
                 </p>
               </div>
             </section>
@@ -71,7 +72,7 @@ const RoomMembersPanel = ({ characters, onRefresh, enableDrag = false }) => {
         {characters.length === 0 && (
           <div className="col-span-full flex items-center justify-center h-full">
             <p className="text-[10px] text-pink-200">
-              No characters yet. Go back to Step 1 to create them.
+              {UI_TEXT.EMPTY_MEMBERS} {/* [修改] */}
             </p>
           </div>
         )}

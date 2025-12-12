@@ -2,23 +2,19 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
 import config from '../game/config';
+import { UI_TEXT } from '../constants/i18nMap'; // [新增]
 
 const GameView = ({ onGameReady, phase }) => {
   const gameRef = useRef(null);
 
-  // 初始化 Phaser 遊戲
   useEffect(() => {
     if (!gameRef.current) {
       const game = new Phaser.Game(config);
       gameRef.current = game;
-
       if (onGameReady) {
-        setTimeout(() => {
-          onGameReady(game);
-        }, 0);
+        setTimeout(() => onGameReady(game), 0);
       }
     }
-
     return () => {
       if (gameRef.current) {
         gameRef.current.destroy(true);
@@ -27,7 +23,6 @@ const GameView = ({ onGameReady, phase }) => {
     };
   }, []);
 
-  // phase 改變時通知 Phaser
   useEffect(() => {
     if (!gameRef.current) return;
     gameRef.current.events.emit('GAME_PHASE_CHANGE', phase);
@@ -43,15 +38,11 @@ const GameView = ({ onGameReady, phase }) => {
           width: '880px',
         }}
       >
-        <p className="title text-[10px]">Simulation Stage</p>
+        <p className="title text-[10px]">{UI_TEXT.SIM_STAGE_TITLE}</p> {/* [修改] */}
         <div
           id="phaser-container"
           className="mx-auto border border-pink-300"
-          style={{
-            width: '800px',
-            height: '600px',
-            backgroundColor: 'black',
-          }}
+          style={{ width: '800px', height: '600px', backgroundColor: 'black' }}
         />
       </div>
     </div>

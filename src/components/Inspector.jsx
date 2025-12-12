@@ -1,10 +1,11 @@
 // src/components/Inspector.jsx
 import React, { useState } from 'react';
-import { Brain, Footprints, MessageCircle, Save, User, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { Brain, Footprints, MessageCircle, User, ChevronDown, ChevronUp } from 'lucide-react';
+import { UI_TEXT } from '../constants/i18nMap'; // [新增]
 
 const genderLabel = (gender) => {
-  if (!gender) return 'Unknown';
-  if (gender === 'male') return 'Male';
+  if (!gender) return UI_TEXT.UNKNOWN;
+  if (gender === 'male') return 'Male'; // 可視需求改中文
   if (gender === 'female') return 'Female';
   return gender;
 };
@@ -13,21 +14,17 @@ const Inspector = ({ agentsData, characterMeta = {} }) => {
   const agentList = Object.values(agentsData)
     .sort((a, b) => (a.char_id || '').localeCompare(b.char_id || ''));
 
-  // 哪些角色是展開Details狀態
   const [openAgents, setOpenAgents] = useState({});
 
   const toggleAgent = (id) => {
-    setOpenAgents((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenAgents((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
     <div className="flex flex-col h-full text-white">
       {agentList.length === 0 && (
         <div className="mt-6 text-center text-[11px] text-pink-100 opacity-70">
-          Waiting for AI decisions...
+          {UI_TEXT.WAITING_AI} {/* [修改] */}
         </div>
       )}
 
@@ -60,24 +57,22 @@ const Inspector = ({ agentsData, characterMeta = {} }) => {
                   onClick={() => toggleAgent(id)}
                   className="border-0 bg-transparent text-pink-200 hover:text-pink-400 flex items-center gap-1 text-[9px]"
                 >
-                  <span>Details</span>
+                  <span>{UI_TEXT.BTN_DETAILS}</span> {/* [修改] */}
                   {isOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
                 </button>
               </p>
 
-              {/* 角色的選擇 */}
               <div className="flex items-center justify-between text-[9px] text-pink-100 mb-1">
                 <div className="inline-flex items-center gap-1 px-2 py-1 rounded bg-[#2b1b2f] border border-pink-300/40">
                   <Footprints size={10} />
-                  <span>Action: {agent.action || '—'}</span>
+                  <span>{UI_TEXT.LBL_ACTION}: {agent.action || '—'}</span> {/* [修改] */}
                 </div>
               </div>
 
-              {/* 對話氣泡 */}
               {agent.content && (
                 <div className="mt-2 mb-1">
                   <p className="text-[9px] text-pink-50 flex items-center gap-1 mb-1">
-                    <MessageCircle size={10} /> Spoken line
+                    <MessageCircle size={10} /> {UI_TEXT.LBL_SPOKEN} {/* [修改] */}
                   </p>
                   <div className="relative">
                     <p className="text-[10px] leading-snug bg-[#111827] border border-pink-300/60 text-pink-50 px-2 py-1 rounded">
@@ -87,24 +82,21 @@ const Inspector = ({ agentsData, characterMeta = {} }) => {
                 </div>
               )}
 
-              {/* 收合的詳細區域 */}
               {isOpen && (
                 <div className="mt-3 space-y-2 border-t border-pink-300/30 pt-2">
-                  {/* Personality / Prompt */}
                   <div>
                     <p className="text-[9px] text-pink-100 flex items-center gap-1 mb-1">
-                      <User size={10} /> Personality / Backstory
+                      <User size={10} /> {UI_TEXT.LBL_PERSONALITY} {/* [修改] */}
                     </p>
                     <p className="text-[10px] leading-snug text-pink-100 bg-[#2b1b2f] border border-pink-300/40 rounded px-2 py-1">
-                      {meta.personality || '(No personality set yet)'}
+                      {meta.personality || UI_TEXT.NO_PERSONALITY} {/* [修改] */}
                     </p>
                   </div>
 
-                  {/* 內心戲 */}
                   {agent.thought && (
                     <div>
                       <p className="text-[9px] text-pink-100 flex items-center gap-1 mb-1">
-                        <Brain size={10} /> Inner thought
+                        <Brain size={10} /> {UI_TEXT.LBL_THOUGHT} {/* [修改] */}
                       </p>
                       <p className="text-[10px] text-yellow-100 italic bg-[#17111d] border border-yellow-500/60 px-2 py-1 rounded">
                         “{agent.thought}”
